@@ -6,7 +6,7 @@ Small, modulable microframework. With minimal features to enable highly optimize
 * PHP will be outdated by 2020 if it wouldn't receive static types and more people to a community
 
 ## Features (todo)
-* Simple router with parameters, $_GET & $_POST handling
+* Simple router with parameters, `$_GET` & `$_POST` handling
 * MVC enabled maybe other design patterns.
 * Preload frontend friendly
 * Plugins friendly
