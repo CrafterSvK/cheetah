@@ -1,0 +1,18 @@
+{
+    "name": "craftersvk/cheetah",
+    "description": "Small, modulable microframework. With minimal features to enable highly optimized webpages.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jakub Janek",
+            "email": "janek.jakub@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "microframework\\": "app/"
+        }
+    }
+}
