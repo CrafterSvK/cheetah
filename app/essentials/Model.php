@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace microframework\essentials;
+namespace cheetah\essentials;
 
 /**
 * Abstract Model class

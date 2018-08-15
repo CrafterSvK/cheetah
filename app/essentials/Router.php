@@ -1,53 +1,60 @@
 <?php
 declare(strict_types=1);
 
-namespace microframework\essentials;
+namespace cheetah\essentials;
 
 /**
-* Basic router with parameter techniques.
+* Basic router with parameter recognition techniques.
+* @param $routes routes file name
 * @author Jakub Janek
 */
 class Router {
     public function __construct(string $routes) {
-        $this->routes_file = $routes;
+        $this->routes = $routes;
+
+        $json = $this->_getRoutes();
 
         $request_uri = \preg_replace('/\?[0-9A-Za-z]+=.*/', '',
             $_SERVER['REQUEST_URI']);
 
-        $current_page = \preg_match('/\/$/', $request_uri) ?
-            \preg_replace('/\/$/', '', $request_uri) :
-                $request_uri;
+        $request_uri = \preg_replace('/\/$/', '', $request_uri);
 
-        foreach ($this->_getRoutes() as $route) {
-            $path = $this->_splitRoutes($route['route']);
+        \preg_match_all('/[\w\d]+/', $request_uri, $current_page);
 
-            $params['_POST'] = $_POST;
-            $params['_GET'] = $_GET;
+        foreach ($json as $key => $route) {
+            $params = array();
 
-            $success = false;
-            if ($current_page === $path['name']) {
-                $success = true;
-            } else if (\strpos($current_page, $path['name']) !== false) {
+            $request_uri = $request_uri === '' ? '/' : $request_uri;
 
-                $current_params =
-                    \str_replace($path['name'], '', $current_page);
+            $continuation = false;
 
-                $current_params = \explode('/',
-                    \preg_replace('/^\//', '', $current_params, 1));
+            if (\preg_match_all('/\//', $route['route']) ===
+                \preg_match_all('/\//', $request_uri)) {
 
-                $params_input = \explode('/',
-                    \preg_replace('/^\//', '', $path['params'], 1));
+                \preg_match_all('/{.*?}|[\w\d]+/', $route['route'], $path);
 
-                foreach ($current_params as $key => $parameter) {
-                    $params[$params_input[$key]] = $parameter;
+                $continuation = true;
+                foreach ($path[0] as $key_bit => $bit) {
+                    if (\preg_match('/{/', $bit) === 0 &&
+                        $continuation === true) {
+
+                        if ($bit !== $current_page[0][$key_bit])
+                            $continuation = false;
+
+                    } else if ($continuation === true) {
+                        $bit_name = \preg_replace('/{|}/', '', $bit);
+                        $params[$bit_name] = $current_page[0][$key_bit];
+                    }
                 }
-
-                $success = true;
             }
 
-            if ($success === true) new Controller($route['view'], $params);
-        }
+            if ($continuation === true) {
+                $params['_GET'] = $_GET;
+                $params['_POST'] = $_POST;
 
+                new Controller($route['view'], $params);
+            }
+        }
     }
 
     /**
@@ -55,27 +62,10 @@ class Router {
     * @return array json array
     */
     private function _getRoutes(): array {
-        $file = \file_get_contents($this->routes_file);
+        $file = \file_get_contents($this->routes);
         $json = \json_decode($file, true);
 
         return $json;
-    }
-
-    /**
-    * Function splits route and parameters into array
-    * @param string $route route path with parameters
-    * @return array splitted array into routes and params if params doesn't
-    * exist params => false
-    */
-    private function _splitRoutes(string $route): array {
-        $path_array['name'] = \preg_match('/\{/', $route) ?
-            \preg_replace('/\/\{.*/', '', $route) : $route;
-
-        $path_array['params'] = $path_array['name'] != $route ?
-            \str_replace(['{', '}'], '',
-                \str_replace($path_array['name'], '', $route)) : false;
-
-        return $path_array;
     }
 }
 

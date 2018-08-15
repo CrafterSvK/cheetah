@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace microframework\essentials;
+namespace cheetah\essentials;
 
 /**
 * Abstract Controller to be extended
@@ -9,6 +9,7 @@ namespace microframework\essentials;
 class Controller {
     public function __construct(string $view, array $params) {
         $this->view = $view;
+        $this->params = $params;
 
         $this->manipulate();
     }
