@@ -4,10 +4,22 @@ Small, modulable microframework. With minimal features to enable highly optimize
 ## Currently extremely experimental
 
 ## Features (todo)
-* Simple router with parameters, `$_GET` & `$_POST` handling
+* Simple router with parameters, `$_GET` & `$_POST` handling ✓ (still experimental)
 * MVC enabled maybe other design patterns.
 * Preload frontend friendly
 * Plugins friendly
+* Automated install
+
+## Installation
+* clone repository using `git clone`
+* create `routes.json` with some routes
+* create an `index.php` file and call
+`require_once "vendor/autoload.php";
+use cheetah\essentials\Router;
+new Router('routes.json');`
+* add some routes e.g. `{"index": {"route": "/", "view": "index.php"}}`
+* create `view/` folder with an `index.php` file
+That's a lot of creation isn't. I am working on automated installation process.
 
 ## Why?
 Other framework didn't satisfy my simple mind. I had no idea what was I coding after 30 minutes of spent time.

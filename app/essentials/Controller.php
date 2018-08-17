@@ -7,7 +7,7 @@ namespace cheetah\essentials;
 * Abstract Controller to be extended
 */
 class Controller {
-    public function __construct(string $view, array $params) {
+    public function __construct(string $view, array $params = array()) {
         $this->view = $view;
         $this->params = $params;
 
