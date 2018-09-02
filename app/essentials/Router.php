@@ -91,7 +91,12 @@ class Router {
                     }
 
                     if ($continuation === true) {
-                        new Controller($route['view'], $params);
+                        if (isset($route['controller'])) {
+                            new $route['controller']($route['view'], $params);
+                        } else {
+                            new Controller($route['view'], $params);
+                        }
+                        
                         $matches = 1;
                     }
             }

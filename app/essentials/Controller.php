@@ -33,6 +33,6 @@ class Controller {
     * @return void
     */
     public function show(): void {
-        require 'view/' . $this->view;
+        require $this->view;
     }
 }
