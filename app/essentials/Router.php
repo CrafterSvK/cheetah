@@ -58,7 +58,6 @@ class Router {
                 if ($matches !== 1) {
                     $params = array(
                         "_GET" => $_GET,
-						"HTTP_RAW_POST_DATA" => $HTTP_RAW_POST_DATA,
                         "_POST" => $_POST,
                         "_router" => $this
                     );
