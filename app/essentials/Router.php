@@ -70,7 +70,8 @@ class Router {
                     } else if (\preg_match_all('/\//', $route['route']) ===
                         \preg_match_all('/\//', $url)) {
 
-                        \preg_match_all('/{.*?}|[\w\d]+/', $route['route'], $path);
+                        \preg_match_all('/{.*?}|[\w\d]+/',
+                            $route['route'], $path);
 
                         $continuation = true;
 
