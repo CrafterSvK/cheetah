@@ -59,6 +59,7 @@ class Router {
                     $params = array(
                         "_GET" => $_GET,
                         "_POST" => $_POST,
+                        "_COOKIE" => $_COOKIE,
                         "_router" => $this
                     );
 
@@ -91,11 +92,7 @@ class Router {
                     }
 
                     if ($continuation === true) {
-                        if (isset($route['controller'])) {
-                            new $route['controller']($route['view'], $params);
-                        } else {
-                            new Controller($route['view'], $params);
-                        }
+                        $this->_spawn($route, $params);
                         
                         $matches = 1;
                     }
@@ -104,6 +101,20 @@ class Router {
 
         if ($matches !== 1)
             new Controller($routes['404']['view']);
+    }
+
+    /**
+     * Spawn site according to matched route and parameters.
+     * @param array $route Route to be spawned to
+     * @param array $params Parameters to be passed to spawned controller
+     * @return void
+     */
+    private function _spawn(array $route, array $params): void {
+        if (isset($route['controller'])) {
+            new $route['controller']($route['view'], $params);
+        } else {
+            new Controller($route['view'], $params);
+        }
     }
 }
 ?>

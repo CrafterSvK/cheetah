@@ -2,3 +2,6 @@
 routes.json
 index.php
 /view/
+composer.lock
+/cdn/
+/essentials/apiController.php
