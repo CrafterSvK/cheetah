@@ -1,0 +1,23 @@
+{
+    "name": "craftersvk/cheetah",
+    "description": "PHP 7 Framework",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jakub Janek",
+            "email": "shaman.janek@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "cheetah\\": "framework/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "ext-json": "latest",
+        "ext-mysqli": "latest",
+        "ext-fileinfo": "latest"
+    }
+}
