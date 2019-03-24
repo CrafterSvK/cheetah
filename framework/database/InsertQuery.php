@@ -4,11 +4,13 @@ declare(strict_types=1);
 namespace cheetah\database;
 
 /**
- * Insert query
+ * Insert query (part of database abstraction layer)
+ * @param string name of a table
+ * @param \mysqli connection
  * @author Jakub Janek
  */
 class InsertQuery extends Query {
-	public function __construct($table, string $db) {
+	public function __construct(string $table, \mysqli $db) {
 		parent::__construct($table, $db);
 
 		$this->columns = '';
@@ -18,10 +20,10 @@ class InsertQuery extends Query {
 	/**
 	 * Add value and column to insert
 	 * @param array|string table.column | column
-	 * @param string value to add
+	 * @param string|int value to add
 	 * @return InsertQuery
 	 */
-	public function value($column, string $value): InsertQuery {
+	public function value($column, $value): InsertQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
 			$column = "{$key}.{$column[$key]}";
