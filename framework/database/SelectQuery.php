@@ -1,17 +1,21 @@
 <?php
+declare(strict_types=1);
+
 namespace cheetah\database;
 
 /**
- * Select query
+ * Select query (part of database abstraction layer)
+ * @param string name of a table
+ * @param \mysqli connection
  * @author Jakub Janek
  */
 class SelectQuery extends Query {
+	private $items = "";
+
 	public function __construct($table, $db) {
 		parent::__construct($table, $db);
 
-		$this->from = "FROM {$this->table}";
-		$this->items = '';
-		$this->order = '';
+		$this->from = $this->add($this->table);
 	}
 
 	/**
@@ -19,7 +23,7 @@ class SelectQuery extends Query {
 	 * @param array|string table.column | column
 	 * @return SelectQuery
 	 */
-	public function item($column) {
+	public function item($column): SelectQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
 			$column = "{$key}.{$column[$key]}";
@@ -35,7 +39,7 @@ class SelectQuery extends Query {
 	 * @param array array of columns
 	 * @return SelectQuery
 	 */
-	public function items($columns) {
+	public function items(array $columns): SelectQuery {
 		foreach ($columns as $column) {
 			$this->item($column);
 		}
@@ -45,9 +49,9 @@ class SelectQuery extends Query {
 
 	/**
 	 * Execute select query
-	 * @return SelectQuery
+	 * @return \mysqli_result
 	 */
-	public function execute() {
+	public function execute(): \mysqli_result {
 		$this->query = "SELECT {$this->items} {$this->from}";
 		$this->query .= $this->conditions !== 'WHERE' ? $this->add($this->conditions) : '';
 		$this->query .= $this->add($this->order);
@@ -58,13 +62,11 @@ class SelectQuery extends Query {
 			if ($result === false) {
 				throw new \Exception("Invalid query {$this->query}");
 			} else {
-				$this->result = $result->fetch_all(MYSQLI_ASSOC);
+				return $result;
 			}
 		} catch (\Exception $e) {
-			$this->result = false;
+			echo $e;
 		}
-
-		return $this;
 	}
 
 	/**
@@ -72,7 +74,7 @@ class SelectQuery extends Query {
 	 * @param string order
 	 * @return SelectQuery
 	 */
-	public function order($order) {
+	public function order(string $order): SelectQuery {
 		$this->order = "ORDER BY {$order}";
 
 		return $this;

@@ -68,9 +68,9 @@ class File {
 	/**
 	 * Deletes file and removes it from database (Needs check)
 	 * @param int id of a file in database
-	 * @return boolean
+	 * @return bool
 	 */
-	public function delete(int $id) {
+	public function delete(int $id): bool {
 		//$file = $this->db->fetch('files', ['id', 'directory', 'name'], "id = {$id}");
 		$file = $this->db->select('files')
 			->items(['id', 'directory', 'name'])

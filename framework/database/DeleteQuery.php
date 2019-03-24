@@ -2,28 +2,29 @@
 namespace cheetah\database;
 
 /**
- * Delete query
+ * Delete query (part of database abstraction layer)
+ * @param string name of a table
+ * @param \mysqli connection
  * @author Jakub Janek
  */
 class DeleteQuery extends Query {
-	public function __construct($table, $db) {
+	public function __construct(string $table, \mysqli $db) {
 		parent::__construct($table, $db);
 
-		$this->from = "FROM {$table}";
+		$this->from .= $this->add($table);
 	}
 
 	/**
 	 * Execute delete query
-	 * @return DeleteQuery
+	 * @return int
 	 */
-	public function execute() {
+	public function execute(): int {
 		$this->query = "DELETE {$this->from}";
 		$this->query .= $this->conditions !== 'WHERE' ? $this->add($this->conditions) : '';
 		$this->query .= $this->add($this->order);
 
 		$this->db->query($this->query);
-		$this->result = true;
 
-		return $this;
+		return $this->db->insert_id;
 	}
 }

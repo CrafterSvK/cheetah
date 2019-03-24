@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace cheetah\database;
 
 /**
@@ -6,7 +8,7 @@ namespace cheetah\database;
  * @author Jakub Janek
  */
 class InsertQuery extends Query {
-	public function __construct($table, $db) {
+	public function __construct($table, string $db) {
 		parent::__construct($table, $db);
 
 		$this->columns = '';
@@ -19,7 +21,7 @@ class InsertQuery extends Query {
 	 * @param string value to add
 	 * @return InsertQuery
 	 */
-	public function value($column, $value) {
+	public function value($column, string $value): InsertQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
 			$column = "{$key}.{$column[$key]}";
@@ -38,7 +40,7 @@ class InsertQuery extends Query {
 	 * @param array columns as keys and values as values
 	 * @return InsertQuery
 	 */
-	public function values($values) {
+	public function values(array $values): InsertQuery {
 		foreach ($values as $key => $value) {
 			$this->value($key, $value);
 		}
@@ -48,9 +50,9 @@ class InsertQuery extends Query {
 
 	/**
 	 * Execute insert query
-	 * @return InsertQuery
+	 * @return int
 	 */
-	public function execute() {
+	public function execute(): int {
 		$this->query = "INSERT INTO {$this->table} ({$this->columns}) VALUES ({$this->values})";
 
 		$this->result = true;
@@ -59,6 +61,6 @@ class InsertQuery extends Query {
 			$this->result = false;
 		}
 
-		return $this;
+		return $this->db->insert_id;
 	}
 }

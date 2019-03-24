@@ -2,25 +2,25 @@
 namespace cheetah\database;
 
 /**
- * Update query
+ * Update query (part of database abstraction layer)
+ * @param string name of a table
+ * @param \mysqli connection
  * @author Jakub Janek
  */
 class UpdateQuery extends Query {
-	public function __construct($table, $db) {
+	public function __construct(string $table, \mysqli $db) {
 		parent::__construct($table, $db);
 
-		$this->from = "{$table}";
-		$this->items = '';
-		$this->order = '';
+		$this->from = $table;
 	}
 
 	/**
 	 * Add value and column to update
 	 * @param array|string table.column | column
-	 * @param string value to add
+	 * @param string|int value to add
 	 * @return UpdateQuery
 	 */
-	public function value($column, $value) {
+	public function value($column, $value): UpdateQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
 			$column = "{$key}.{$column[$key]}";
@@ -40,19 +40,17 @@ class UpdateQuery extends Query {
 	 * @param array columns as keys and values as values
 	 * @return UpdateQuery
 	 */
-	public function values($values) {
-		foreach ($values as $key => $value) {
-			$this->value($key, $value);
-		}
+	public function values(array $values): UpdateQuery {
+		foreach ($values as $key => $value) $this->value($key, $value);
 		
 		return $this;
 	}
 
 	/**
 	 * Execute update query
-	 * @return UpdateQuery
+	 * @return void
 	 */
-	public function execute() {
+	public function execute(): void {
 		$this->query = "UPDATE {$this->from} SET {$this->set} ";
 		$this->query .= $this->conditions !== 'WHERE' ? $this->add($this->conditions) : '';
 
@@ -61,13 +59,11 @@ class UpdateQuery extends Query {
 
 			if ($result === false) {
 				throw new \Exception("Invalid query {$this->query}");
-			} else {
-				//$this->result = $result->fetch_all(MYSQLI_ASSOC); todo: fix
-			}
+			}/* else {
+				$this->result = $result->fetch_all(MYSQLI_ASSOC); todo: fix
+			} */
 		} catch (\Exception $e) {
-			$this->result = false;
+			echo $e;
 		}
-
-		return $this;
 	}
 }

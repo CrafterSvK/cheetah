@@ -14,5 +14,10 @@
             "cheetah\\": "framework/"
         }
     },
+    "require": {
+        "ext-mysqli": "*",
+        "ext-fileinfo": "*",
+        "ext-json": "*"
+    },
     "minimum-stability": "dev"
 }

@@ -27,10 +27,27 @@ class Router {
 		return $json;
 	}
 
+	/** Get URL by name from json routes
+	 * @param string name of json object defining route
+	 * @param mixed params
+	 * @return string
+	 */
+	public function url(string $name, ...$params): string {
+		if (!isset($this->routes[$name])) return "#";
+
+		$route = $this->routes[$name]['route'];
+
+		foreach ($params as $param) {
+			$route = preg_replace("/{\p{L}\p{N}}/u", $param, $route, 1);
+		}
+
+		return $this->routes[$name]['route'];
+	}
+
 	/**
 	 * Match route defined by routes file. This is the critical part of router as it requires to be super fast.
 	 */
-	private function _matchRoute() {
+	private function _matchRoute(): void {
 		$err = true;
 
 		$request_uri = \preg_replace('/\?[\p{L}\p{N}]+=.*/u', '',
@@ -81,8 +98,9 @@ class Router {
 	/** Spawn session and controller
 	 * @param array route with parameters
 	 * @param array array of params
+	 * @return void
 	 */
-	private function _spawn(array $route, $params = []) {
+	private function _spawn(array $route, array $params = []): void {
 		session_start();
 
 		if (isset($route['view'])) {
@@ -91,12 +109,14 @@ class Router {
 			return;
 		}
 
-		$prefix = isset($this->config['namespace-prefix']) ? $this->config['namespace-prefix'] : "";
+		$prefix = $this->config['namespace-prefix'] ?? "";
 
 		$call = explode("::", $route['controller']);
 		$controller = "{$prefix}{$call[0]}";
 
 		$controller = new $controller;
+
+		$controller->router = $this; //Chain router into controller to access
 
 		call_user_func_array([$controller, $call[1]], $params);
 	}

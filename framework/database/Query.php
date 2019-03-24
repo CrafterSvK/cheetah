@@ -2,22 +2,28 @@
 namespace cheetah\database;
 
 /**
- * Query
+ * Query (part of database abstraction layer)
  * @param array|string tables | table
- * @param mysqli object with database
+ * @param \mysqli object with database
  * @author Jakub Janek
  */
-class Query {
-	public function __construct($table, $db) {
+abstract class Query {
+	/** @var \mysqli */
+	protected $db;
+
+	protected $from = "FROM";
+	protected $query = "";
+	protected $order = "";
+	protected $conditions = 'WHERE';
+	protected $table = "";
+	protected $operator = 'AND';
+
+	public function __construct($table, \mysqli $db) {
 		$this->db = $db;
 		
-		if (is_array($table)) {
-			$table = implode(', ', $table);
-		}
+		if (is_array($table)) $table = implode(', ', $table);
 		
 		$this->table = $table;
-		$this->conditions = 'WHERE';
-		$this->operator = 'AND';
 	}
 
 	/**
@@ -27,7 +33,7 @@ class Query {
 	 * @param string type of an operation
 	 * @return Query
 	 */
-	public function condition($column, $value, $type = '=') {
+	public function condition($column, $value, string $type = '='): Query {
 		if (is_array($column)) {
 			$key = array_key_first($column);
 			$column = "{$key}.{$column[$key]}";
@@ -53,7 +59,7 @@ class Query {
 	 * Set operator of a next condition to OR
 	 * @return Query
 	 */
-	public function or() {
+	public function or(): Query {
 		$this->operator = "OR";
 
 		return $this;
@@ -63,13 +69,13 @@ class Query {
 	 * Set operator of a next condition to AND
 	 * @return Query
 	 */
-	public function and() {
+	public function and(): Query {
 		$this->operator = "AND";
 
 		return $this;
 	}
 
-	public function add($string) {
+	public function add($string): string {
 		return ' ' . $string;
 	}
 	

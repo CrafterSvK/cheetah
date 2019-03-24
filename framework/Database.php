@@ -6,8 +6,7 @@ namespace cheetah;
 use cheetah\database\{SelectQuery, DeleteQuery, InsertQuery, UpdateQuery};
 
 /**
- * Database abstraction layer. Other stuff in framework may require this piece of code, sorry for that.
- * WIP
+ * Database abstraction layer.
  * @author Jakub Janek
  */
 class Database {
@@ -31,9 +30,9 @@ class Database {
 	/**
 	 * Create select query on active database
 	 * @param string table name
-	 * @return SelectQuery object
+	 * @return SelectQuery
 	 */
-	public function select($table) {
+	public function select(string $table): SelectQuery {
 		$query = new SelectQuery($table, $this->active);
 
 		return $query;
@@ -42,9 +41,9 @@ class Database {
 	/**
 	 * Create delete query on active database
 	 * @param string table name
-	 * @return DeleteQuery object
+	 * @return DeleteQuery
 	 */
-	public function delete($table) {
+	public function delete(string $table): DeleteQuery {
 		$query = new DeleteQuery($table, $this->active);
 
 		return $query;
@@ -53,9 +52,9 @@ class Database {
 	/**
 	 * Create insert query on active database
 	 * @param string table name
-	 * @return InsertQuery object
+	 * @return InsertQuery
 	 */
-	public function insert($table) {
+	public function insert(string $table): InsertQuery {
 		$query = new InsertQuery($table, $this->active);
 
 		return $query;
@@ -64,9 +63,9 @@ class Database {
 	/**
 	 * Create update query on active database
 	 * @param string table name
-	 * @return UpdateQuery object
+	 * @return UpdateQuery
 	 */
-	public function update($table) {
+	public function update(string $table): UpdateQuery {
 		$query = new UpdateQuery($table, $this->active);
 
 		return $query;
@@ -76,9 +75,9 @@ class Database {
 	 * Perform a simple query to database
 	 * @param string query with placeholders
 	 * @param array values to replace placeholders
-	 * @return mixed
+	 * @return \mysqli_result
 	 */
-	public function query($query, $values) {
+	public function query($query, $values): \mysqli_result {
 		foreach ($values as $key => $value) {
 			$value = '\'' . $this->active->real_escape_string($value) . '\'';
 			$query = \str_replace($key, $value, $query);
@@ -94,16 +93,22 @@ class Database {
 	 * @param string name of user
 	 * @param string password to given user
 	 * @param string name of database
+	 * @return void
 	 */
-	public function add($systemName, $host, $name, $password, $database) {
-		$this->db[$systemName] = new mysqli($host, $name, $password, $database);
+	public function add(string $systemName, string $host, string $name, string $password, string $database): void {
+		$this->db[$systemName] = new \mysqli($host, $name, $password, $database);
 	}
 
 	/**
 	 * Set database by given internal name active
 	 * @param string internal name 'default' for default
+	 * @return void
 	 */
-	public function setActive($systemName) {
+	public function setActive(string $systemName): void {
 		$this->active = $this->db[$systemName];
+	}
+
+	public function __destruct() {
+		foreach ($this->db as $db) $db->close();
 	}
 }
