@@ -1,5 +1,7 @@
+.idea
 config.json
 routes.json
-framework/database/RandomController.php
+framework/RandomController.php
 index.php
 vendor
+composer.lock
