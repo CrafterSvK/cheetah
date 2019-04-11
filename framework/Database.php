@@ -14,7 +14,7 @@ use function str_replace;
  */
 class Database {
 	private $active;
-	private array $db = [];
+	private $db = [];
 
 	public function __construct() {
 		$file = file_get_contents('config.json'); //hardcoded config json sorry
