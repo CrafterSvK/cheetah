@@ -13,7 +13,7 @@ use function str_replace;
  * @author Jakub Janek
  */
 class Database {
-	private object $active;
+	private $active;
 	private array $db = [];
 
 	public function __construct() {
