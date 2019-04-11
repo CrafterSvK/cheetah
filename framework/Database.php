@@ -4,15 +4,21 @@ declare(strict_types=1);
 namespace cheetah;
 
 use cheetah\database\{SelectQuery, DeleteQuery, InsertQuery, UpdateQuery};
+use function file_get_contents;
+use function json_decode;
+use function str_replace;
 
 /**
  * Database abstraction layer.
  * @author Jakub Janek
  */
 class Database {
+	private object $active;
+	private array $db = [];
+
 	public function __construct() {
-		$file = \file_get_contents('config.json'); //hardcoded config json sorry
-		$json = \json_decode($file);
+		$file = file_get_contents('config.json'); //hardcoded config json sorry
+		$json = json_decode($file);
 
 		$this->db = [];
 
@@ -80,7 +86,7 @@ class Database {
 	public function query($query, $values): \mysqli_result {
 		foreach ($values as $key => $value) {
 			$value = '\'' . $this->active->real_escape_string($value) . '\'';
-			$query = \str_replace($key, $value, $query);
+			$query = str_replace($key, $value, $query);
 		}
 
 		return $this->active->query($query);

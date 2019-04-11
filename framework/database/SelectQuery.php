@@ -52,7 +52,7 @@ class SelectQuery extends Query {
 	 * @return \mysqli_result
 	 */
 	public function execute(): \mysqli_result {
-		$this->query = "SELECT {$this->items} {$this->from}";
+		$this->query = "SELECT {$this->items} FROM {$this->from}";
 		$this->query .= $this->conditions !== 'WHERE' ? $this->add($this->conditions) : '';
 		$this->query .= $this->add($this->order);
 

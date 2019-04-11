@@ -3,18 +3,21 @@ declare(strict_types=1);
 
 namespace cheetah\database;
 
+use \mysqli;
+
 /**
  * Insert query (part of database abstraction layer)
  * @param string name of a table
- * @param \mysqli connection
+ * @param mysqli connection
  * @author Jakub Janek
  */
 class InsertQuery extends Query {
-	public function __construct(string $table, \mysqli $db) {
-		parent::__construct($table, $db);
+	private $columns = '';
+	private $values = '';
+	private $result = '';
 
-		$this->columns = '';
-		$this->values = '';
+	public function __construct(string $table, mysqli $db) {
+		parent::__construct($table, $db);
 	}
 
 	/**

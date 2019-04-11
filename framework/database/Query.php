@@ -80,5 +80,11 @@ abstract class Query {
 	public function add($string): string {
 		return ' ' . $string;
 	}
-	
+
+	/**
+	 * Empty execute to fill by child class
+	 */
+	public function execute() {
+		return false;
+	}
 }
