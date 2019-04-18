@@ -10,7 +10,7 @@ namespace cheetah\database;
  * @author Jakub Janek
  */
 class UpdateQuery extends Query {
-	public function __construct(string $table, \mysqli $db) {
+	public function __construct($table, \mysqli $db) {
 		parent::__construct($table, $db);
 
 		$this->from = $table;

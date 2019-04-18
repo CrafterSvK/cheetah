@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace cheetah\database;
 
+use mysqli;
+
 /**
  * Select query (part of database abstraction layer)
  * @param string name of a table
- * @param \mysqli connection
+ * @param mysqli connection
  * @author Jakub Janek
  */
 class SelectQuery extends Query {

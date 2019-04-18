@@ -3,12 +3,18 @@ declare(strict_types=1);
 
 namespace cheetah;
 
+use function file_get_contents;
+use function json_decode;
+
 /** Router with arbitrary parameter position
  * @param string name of json file with routes
  * @param string name of json file with internal config vars
  * @author Jakub Janek
  */
 class Router {
+	public $routes = [];
+	public $config = [];
+
 	public function __construct(string $routes, string $config) {
 		$this->routes = $this->_jsonFile($routes);
 		$this->config = $this->_jsonFile($config);
@@ -21,8 +27,8 @@ class Router {
 	 * @return array
 	 */
 	private function _jsonFile(string $file): array {
-		$file = \file_get_contents($file);
-		$json = \json_decode($file, true);
+		$file = file_get_contents($file);
+		$json = json_decode($file, true);
 
 		return $json;
 	}
@@ -50,7 +56,7 @@ class Router {
 	private function _matchRoute(): void {
 		$err = true;
 
-		$request_uri = \preg_replace('/\?[\p{L}\p{N}]+=.*/u', '',
+		$request_uri = preg_replace('/\?[\p{L}\p{N}]+=.*/u', '',
 			$_SERVER['REQUEST_URI']); //remove get parameters
 
 		if ($this->routes['home']['route'] === $request_uri) {
@@ -59,7 +65,7 @@ class Router {
 			return;
 		}
 
-		$request_uri = \preg_replace('/\/$/u', '', urldecode($request_uri)); //remove leading /
+		$request_uri = preg_replace('/\/$/u', '', urldecode($request_uri)); //remove leading /
 
 		preg_match_all("/[\p{L}\p{N}]+/u", $request_uri, $uri);
 		$uri = $uri[0];
