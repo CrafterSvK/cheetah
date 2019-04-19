@@ -5,6 +5,7 @@ namespace cheetah;
 
 use cheetah\database\{SelectQuery, DeleteQuery, InsertQuery, UpdateQuery};
 
+use Exception;
 use mysqli;
 use mysqli_result;
 use function file_get_contents;
@@ -13,27 +14,35 @@ use function str_replace;
 
 /**
  * Database abstraction layer.
+ * @param bool if true. Database won't load from config. Usable for standalone situations
+ * @throws Exception when $standalone is false and config.json is not found
  * @author Jakub Janek
  */
 class Database {
 	private $active;
 	private $db = [];
 
-	public function __construct() {
-		$file = file_get_contents('config.json'); //hardcoded config json sorry
-		$json = json_decode($file);
+	public function __construct($standalone = false) {
+		if (!$standalone) {
+			if (!file_exists('config.json')) {
+				throw new Exception("config.json not found.");
+			}
 
-		$this->db = [];
+			$file = file_get_contents('config.json');
+			$json = json_decode($file);
 
-		$this->db['default'] =
-			new mysqli(
-				$json->database->host,
-				$json->database->user,
-				$json->database->password,
-				$json->database->name
-			);
+			$this->db = [];
 
-		$this->active = $this->db['default'];
+			$this->db['default'] =
+				new mysqli(
+					$json->database->host,
+					$json->database->user,
+					$json->database->password,
+					$json->database->name
+				);
+
+			$this->active = $this->db['default'];
+		}
 	}
 
 	/**

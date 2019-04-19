@@ -28,7 +28,7 @@ class SelectQuery extends Query {
 	public function item($column): SelectQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
-			$column = "`{$key}.{$column[$key]}`";
+			$column = "`{$key}`.{$column[$key]}";
 		}
 
 		$this->items .= empty($this->items) ? $column : ", {$column}";
