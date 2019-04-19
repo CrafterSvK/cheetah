@@ -28,6 +28,13 @@ class SelectQuery extends Query {
 	public function item($column): SelectQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
+
+			if (is_array($column[$key])) {
+				foreach ($column[$key] as $col) $this->item([$key => $col]);
+
+				return $this;
+			}
+
 			$column = "`{$key}`.{$column[$key]}";
 		}
 
