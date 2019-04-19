@@ -17,8 +17,6 @@ class UpdateQuery extends Query {
 
 	public function __construct($table, mysqli $db) {
 		parent::__construct($table, $db);
-
-		$this->from = $table;
 	}
 
 	/**
@@ -30,14 +28,16 @@ class UpdateQuery extends Query {
 	public function value($column, $value): UpdateQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
-			$column = "`{$key}.{$column[$key]}`";
+			$column = "`{$key}`.{$column[$key]}";
+		} else {
+			$column = "`{$column}`";
 		}
-		
-		$value = '\'' . $this->db->real_escape_string((string)$value) . '\'';
+
+		$value = !is_null($value) ? "'{$this->db->real_escape_string((string)$value)}'" : 'NULL';
 
 		$set = "{$column} = {$value}";
 
-		$this->set .= empty($this->set) ? $set : ',' . $this->add($set);
+		$this->set .= empty($this->set) ? $set : ", {$set}";
 
 		return $this;
 	}
@@ -49,7 +49,7 @@ class UpdateQuery extends Query {
 	 */
 	public function values(array $values): UpdateQuery {
 		foreach ($values as $key => $value) $this->value($key, $value);
-		
+
 		return $this;
 	}
 
@@ -63,7 +63,7 @@ class UpdateQuery extends Query {
 			$this->from,
 			$this->set,
 			!empty($this->conditions) ? $this->conditions : '1'
-			);
+		);
 
 		try {
 			$result = $this->db->query($this->query);

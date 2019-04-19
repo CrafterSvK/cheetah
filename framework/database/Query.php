@@ -15,18 +15,24 @@ abstract class Query {
 	/** @var mysqli */
 	protected $db;
 
-	protected $from = "FROM";
+	protected $from = "";
 	protected $query = "";
 	protected $order = "";
-	protected $conditions = '';
+	protected $conditions = "";
 	protected $table = "";
 	protected $operator = 'AND';
 
 	public function __construct($table, mysqli $db) {
 		$this->db = $db;
-		
-		if (is_array($table)) $table = implode(', ', $table);
-		
+
+		if (is_array($table)) {
+			foreach ($table as &$t) $t = "`{$t}`"; //sanitize names
+
+			$table = implode(', ', $table);
+		} else {
+			$table = "`{$table}`";
+		}
+
 		$this->table = $table;
 	}
 
@@ -40,24 +46,19 @@ abstract class Query {
 	public function condition($column, $value, string $type = '='): Query {
 		if (is_array($column)) {
 			$key = array_key_first($column);
-			$column = "{$key}.{$column[$key]}";
+			$column = "`{$key}`.{$column[$key]}";
 		}
 
 		if (is_array($value)) {
 			$key = array_key_first($value);
-			$value = "{$key}.{$value[$key]}";
+			$value = "`{$key}`.{$value[$key]}";
 		} else {
-			if (!is_null($value))
-				$value = "'{$this->db->real_escape_string((string)$value)}'";
-			else
-				$value = "NULL";
+			$value = !is_null($value) ? $value = "'{$this->db->real_escape_string((string)$value)}'" : "NULL";
 		}
-		
-		$this->conditions .= empty($this->conditions)
-			? $this->add("{$column} {$type} {$value}")
-			: $this->add("{$this->operator} {$column} {$type} {$value}");
 
-		//$this->conditions .= $this->add($string);
+		$this->conditions .= empty($this->conditions)
+			? "{$column} {$type} {$value}"
+			: " {$this->operator} {$column} {$type} {$value}";
 
 		return $this;
 	}
@@ -92,12 +93,9 @@ abstract class Query {
 		return $this;
 	}
 
-	protected function add($string): string {
-		return ' ' . $string;
-	}
-
 	/**
 	 * Empty execute to fill by child class
+	 * There is 100% better replacement for this method
 	 */
 	public function execute() {
 		return false;

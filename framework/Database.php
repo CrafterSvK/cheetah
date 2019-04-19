@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace cheetah;
 
 use cheetah\database\{SelectQuery, DeleteQuery, InsertQuery, UpdateQuery};
-use function file_get_contents;
-use function json_decode;
+
 use mysqli;
 use mysqli_result;
+use function file_get_contents;
+use function json_decode;
 use function str_replace;
 
 /**
@@ -24,9 +25,9 @@ class Database {
 
 		$this->db = [];
 
-		$this->db['default'] = 
+		$this->db['default'] =
 			new mysqli(
-				$json->database->host, 
+				$json->database->host,
 				$json->database->user,
 				$json->database->password,
 				$json->database->name
@@ -95,7 +96,7 @@ class Database {
 	}
 
 	/**
-	 * Add database 
+	 * Add database
 	 * @param string internal name
 	 * @param string hostname
 	 * @param string name of user

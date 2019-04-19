@@ -1,4 +1,5 @@
 <?php
+
 namespace cheetah;
 
 use function file_exists;

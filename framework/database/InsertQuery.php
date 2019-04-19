@@ -29,7 +29,7 @@ class InsertQuery extends Query {
 	public function value($column, $value): InsertQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
-			$column = "`{$key}.{$column[$key]}`";
+			$column = "`{$key}`.{$column[$key]}";
 		}
 
 		if (!is_null($value))
@@ -37,8 +37,8 @@ class InsertQuery extends Query {
 		else
 			$value = "NULL";
 
-		$this->columns .= empty($this->columns) ? $column : ',' . $this->add($column);
-		$this->values .= empty($this->values) ? $value : ',' . $this->add($value);
+		$this->columns .= empty($this->columns) ? $column : ", {$column}";
+		$this->values .= empty($this->values) ? $value : ", {$value}";
 
 		return $this;
 	}
@@ -49,18 +49,16 @@ class InsertQuery extends Query {
 	 * @return InsertQuery
 	 */
 	public function values(array $values): InsertQuery {
-		foreach ($values as $key => $value) {
-			$this->value($key, $value);
-		}
+		foreach ($values as $key => $value) $this->value($key, $value);
 
 		return $this;
 	}
 
 	/**
 	 * Execute insert query
-	 * @return int
+	 * @return int|bool
 	 */
-	public function execute(): int {
+	public function execute() {
 		$this->query = sprintf(
 			"INSERT INTO %s (%s) VALUES (%s)",
 			$this->table,
@@ -74,6 +72,6 @@ class InsertQuery extends Query {
 			$this->result = false;
 		}
 
-		return $this->db->insert_id;
+		return $this->db->insert_id == 0 ? false : $this->db->insert_id;
 	}
 }

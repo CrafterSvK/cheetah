@@ -18,8 +18,6 @@ class SelectQuery extends Query {
 
 	public function __construct($table, $db) {
 		parent::__construct($table, $db);
-
-		$this->from = $this->add($this->table);
 	}
 
 	/**
@@ -33,7 +31,7 @@ class SelectQuery extends Query {
 			$column = "`{$key}.{$column[$key]}`";
 		}
 
-		$this->items .= empty($this->items) ? $column : ',' . $this->add($column);
+		$this->items .= empty($this->items) ? $column : ", {$column}";
 
 		return $this;
 	}
@@ -44,16 +42,14 @@ class SelectQuery extends Query {
 	 * @return SelectQuery
 	 */
 	public function items(array $columns): SelectQuery {
-		foreach ($columns as $column) {
-			$this->item($column);
-		}
+		foreach ($columns as $column) $this->item($column);
 
 		return $this;
 	}
 
 	/**
 	 * Execute select query
-	 * @return mysqli_result|bool
+	 * @return mysqli_result
 	 */
 	public function execute(): mysqli_result {
 		$this->query = sprintf(
@@ -75,8 +71,6 @@ class SelectQuery extends Query {
 		} catch (Exception $e) {
 			echo $e;
 		}
-
-		return false;
 	}
 
 	/**
