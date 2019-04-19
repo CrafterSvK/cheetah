@@ -3,24 +3,26 @@ declare(strict_types=1);
 
 namespace cheetah\database;
 
+use mysqli;
+
 /**
  * Query (part of database abstraction layer)
  * @param array|string tables | table
- * @param \mysqli object with database
+ * @param mysqli object with database
  * @author Jakub Janek
  */
 abstract class Query {
-	/** @var \mysqli */
+	/** @var mysqli */
 	protected $db;
 
 	protected $from = "FROM";
 	protected $query = "";
 	protected $order = "";
-	protected $conditions = 'WHERE';
+	protected $conditions = '';
 	protected $table = "";
 	protected $operator = 'AND';
 
-	public function __construct($table, \mysqli $db) {
+	public function __construct($table, mysqli $db) {
 		$this->db = $db;
 		
 		if (is_array($table)) $table = implode(', ', $table);
@@ -48,7 +50,7 @@ abstract class Query {
 			$value = "'" . $this->db->real_escape_string((string)$value) . "'";
 		}
 		
-		$this->conditions .= $this->conditions === 'WHERE' 
+		$this->conditions .= empty($this->conditions)
 			? $this->add("{$column} {$type} {$value}")
 			: $this->add("{$this->operator} {$column} {$type} {$value}");
 
@@ -58,7 +60,7 @@ abstract class Query {
 	}
 
 	/**
-	 * Set operator of a next condition to OR
+	 * Set operator of a next conditions to OR
 	 * @return Query
 	 */
 	public function or(): Query {
@@ -68,7 +70,7 @@ abstract class Query {
 	}
 
 	/**
-	 * Set operator of a next condition to AND
+	 * Set operator of a next conditions to AND
 	 * @return Query
 	 */
 	public function and(): Query {
@@ -77,7 +79,17 @@ abstract class Query {
 		return $this;
 	}
 
-	public function add($string): string {
+	/**
+	 * Set operator of a next conditions to XOR
+	 * @return Query
+	 */
+	public function xor(): Query {
+		$this->operator = "XOR";
+
+		return $this;
+	}
+
+	protected function add($string): string {
 		return ' ' . $string;
 	}
 

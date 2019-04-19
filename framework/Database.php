@@ -25,7 +25,7 @@ class Database {
 		$this->db = [];
 
 		$this->db['default'] = 
-			new \mysqli(
+			new mysqli(
 				$json->database->host, 
 				$json->database->user,
 				$json->database->password,
@@ -87,7 +87,7 @@ class Database {
 	 */
 	public function query($query, $values): mysqli_result {
 		foreach ($values as $key => $value) {
-			$value = '\'' . $this->active->real_escape_string($value) . '\'';
+			$value = "'{$this->active->real_escape_string($value)}'";
 			$query = str_replace($key, $value, $query);
 		}
 

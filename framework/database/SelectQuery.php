@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace cheetah\database;
 
+use Exception;
 use mysqli;
+use mysqli_result;
 
 /**
  * Select query (part of database abstraction layer)
@@ -28,7 +30,7 @@ class SelectQuery extends Query {
 	public function item($column): SelectQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
-			$column = "{$key}.{$column[$key]}";
+			$column = "`{$key}.{$column[$key]}`";
 		}
 
 		$this->items .= empty($this->items) ? $column : ',' . $this->add($column);
@@ -51,24 +53,30 @@ class SelectQuery extends Query {
 
 	/**
 	 * Execute select query
-	 * @return \mysqli_result
+	 * @return mysqli_result|bool
 	 */
-	public function execute(): \mysqli_result {
-		$this->query = "SELECT {$this->items} FROM {$this->from}";
-		$this->query .= $this->conditions !== 'WHERE' ? $this->add($this->conditions) : '';
-		$this->query .= $this->add($this->order);
+	public function execute(): mysqli_result {
+		$this->query = sprintf(
+			"SELECT %s FROM %s WHERE %s %s",
+			$this->items,
+			$this->from,
+			empty($this->conditions) ? $this->conditions : '1',
+			$this->order
+		);
 
 		try {
 			$result = $this->db->query($this->query);
 
 			if ($result === false) {
-				throw new \Exception("Invalid query {$this->query}");
+				throw new Exception("Invalid query {$this->query}");
 			} else {
 				return $result;
 			}
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			echo $e;
 		}
+
+		return false;
 	}
 
 	/**

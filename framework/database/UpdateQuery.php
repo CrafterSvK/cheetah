@@ -3,14 +3,19 @@ declare(strict_types=1);
 
 namespace cheetah\database;
 
+use Exception;
+use mysqli;
+
 /**
  * Update query (part of database abstraction layer)
  * @param string name of a table
- * @param \mysqli connection
+ * @param mysqli connection
  * @author Jakub Janek
  */
 class UpdateQuery extends Query {
-	public function __construct($table, \mysqli $db) {
+	private $set;
+
+	public function __construct($table, mysqli $db) {
 		parent::__construct($table, $db);
 
 		$this->from = $table;
@@ -25,7 +30,7 @@ class UpdateQuery extends Query {
 	public function value($column, $value): UpdateQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
-			$column = "{$key}.{$column[$key]}";
+			$column = "`{$key}.{$column[$key]}`";
 		}
 		
 		$value = '\'' . $this->db->real_escape_string((string)$value) . '\'';
@@ -50,21 +55,25 @@ class UpdateQuery extends Query {
 
 	/**
 	 * Execute update query
-	 * @return void
+	 * @return bool|void
 	 */
-	public function execute(): void {
-		$this->query = "UPDATE {$this->from} SET {$this->set} ";
-		$this->query .= $this->conditions !== 'WHERE' ? $this->add($this->conditions) : '';
+	public function execute(): bool {
+		$this->query = sprintf(
+			"UPDATE %s SET %s WHERE %s", //I don't know how to suppress this warning...
+			$this->from,
+			$this->set,
+			empty($this->conditions) ? $this->conditions : '1'
+			);
 
 		try {
 			$result = $this->db->query($this->query);
 
 			if ($result === false) {
-				throw new \Exception("Invalid query {$this->query}");
-			}/* else {
-				$this->result = $result->fetch_all(MYSQLI_ASSOC); todo: fix
-			} */
-		} catch (\Exception $e) {
+				throw new Exception("Invalid query {$this->query}");
+			} else {
+				return true;
+			}
+		} catch (Exception $e) {
 			echo $e;
 		}
 	}

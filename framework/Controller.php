@@ -1,6 +1,8 @@
 <?php
 namespace cheetah;
 
+use function file_exists;
+
 /**
  * Fairly useless right now, no template engine is used so wrapping only removes local functions
  * Twig is an option.
@@ -10,7 +12,7 @@ namespace cheetah;
  */
 abstract class Controller {
 	public function render(string $view) {
-		if (!\file_exists($view)) {
+		if (!file_exists($view)) {
 			echo "View {$view} doesn't exist.";
 
 			exit();

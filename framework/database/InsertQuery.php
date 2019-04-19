@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace cheetah\database;
 
-use \mysqli;
+use mysqli;
 
 /**
  * Insert query (part of database abstraction layer)
@@ -29,10 +29,11 @@ class InsertQuery extends Query {
 	public function value($column, $value): InsertQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
-			$column = "{$key}.{$column[$key]}";
+			$column = "`{$key}.{$column[$key]}`";
 		}
-		
-		$value = '\'' . $this->db->real_escape_string((string)$value) . '\'';
+
+		if (!is_null($value))
+			$value = "'{$this->db->real_escape_string((string)$value)}'";
 
 		$this->columns .= empty($this->columns) ? $column : ',' . $this->add($column);
 		$this->values .= empty($this->values) ? $value : ',' . $this->add($value);
@@ -49,7 +50,7 @@ class InsertQuery extends Query {
 		foreach ($values as $key => $value) {
 			$this->value($key, $value);
 		}
-		
+
 		return $this;
 	}
 
@@ -58,7 +59,12 @@ class InsertQuery extends Query {
 	 * @return int
 	 */
 	public function execute(): int {
-		$this->query = "INSERT INTO {$this->table} ({$this->columns}) VALUES ({$this->values})";
+		$this->query = sprintf(
+			"INSERT INTO %s (%s) VALUES (%s)",
+			$this->table,
+			$this->columns,
+			$this->values
+		);
 
 		$this->result = true;
 
