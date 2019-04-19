@@ -43,23 +43,35 @@ abstract class Query {
 	 * @return Query
 	 */
 	public function condition($column, $value, string $type = '='): Query {
-		if (is_array($column)) {
-			$key = array_key_first($column);
-			$column = "`{$key}`.{$column[$key]}";
-		}
+		$condition = new Condition('', $this->db, $this);
 
-		if (is_array($value)) {
-			$key = array_key_first($value);
-			$value = "`{$key}`.{$value[$key]}";
-		} else {
-			$value = !is_null($value) ? $value = "'{$this->db->real_escape_string((string)$value)}'" : "NULL";
-		}
-
-		$this->conditions .= empty($this->conditions)
-			? "{$column} {$type} {$value}"
-			: " {$this->operator} {$column} {$type} {$value}";
+		$condition->condition($column, $value, $type)
+			->close();
 
 		return $this;
+	}
+
+	/**
+	 * Adds condition string to conditions.
+	 * Do not use if you don't know what you are doing!
+	 * @param string
+	 * @return void
+	 */
+	public function add($conditionString): void {
+		$this->conditions .= empty($this->conditions)
+			? $conditionString
+			: " {$this->operator} $conditionString";
+	}
+
+	/**
+	 * Add multiple conditions in a group
+	 * @param string operator
+	 * @return Condition
+	 */
+	public function conditions(string $operator): Condition {
+		$condition = new Condition($operator, $this->db, $this);
+
+		return $condition;
 	}
 
 	/**
