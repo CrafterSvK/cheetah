@@ -62,7 +62,7 @@ class UpdateQuery extends Query {
 			"UPDATE %s SET %s WHERE %s", //I don't know how to suppress this warning...
 			$this->from,
 			$this->set,
-			empty($this->conditions) ? $this->conditions : '1'
+			!empty($this->conditions) ? $this->conditions : '1'
 			);
 
 		try {

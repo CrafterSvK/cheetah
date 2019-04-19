@@ -60,7 +60,7 @@ class SelectQuery extends Query {
 			"SELECT %s FROM %s WHERE %s %s",
 			$this->items,
 			$this->from,
-			empty($this->conditions) ? $this->conditions : '1',
+			!empty($this->conditions) ? $this->conditions : '1',
 			$this->order
 		);
 

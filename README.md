@@ -1,12 +1,14 @@
 # Cheetah
-PHP 7+ *type safe* micro-framework built for modularity 
+PHP 7.3+ *type safe* micro-framework built for modularity 
 and simplicity in mind
 
 ### Fairly stable features
 - Router with arbitrary parameter position (MVC) 
 
-### Highly experimental features
+### Unstable but usable features
 - Database engine built on top of **mysqli**.
+
+### Highly experimental features
 - File engine
 - Type safety
 

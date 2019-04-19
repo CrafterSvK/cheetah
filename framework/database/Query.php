@@ -47,7 +47,8 @@ abstract class Query {
 			$key = array_key_first($value);
 			$value = "{$key}.{$value[$key]}";
 		} else {
-			$value = "'" . $this->db->real_escape_string((string)$value) . "'";
+			if (!is_null($value))
+				$value = "'{$this->db->real_escape_string((string)$value)}'";
 		}
 		
 		$this->conditions .= empty($this->conditions)
