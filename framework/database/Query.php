@@ -49,6 +49,8 @@ abstract class Query {
 		} else {
 			if (!is_null($value))
 				$value = "'{$this->db->real_escape_string((string)$value)}'";
+			else
+				$value = "NULL";
 		}
 		
 		$this->conditions .= empty($this->conditions)

@@ -34,6 +34,8 @@ class InsertQuery extends Query {
 
 		if (!is_null($value))
 			$value = "'{$this->db->real_escape_string((string)$value)}'";
+		else
+			$value = "NULL";
 
 		$this->columns .= empty($this->columns) ? $column : ',' . $this->add($column);
 		$this->values .= empty($this->values) ? $value : ',' . $this->add($value);
