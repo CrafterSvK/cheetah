@@ -55,7 +55,7 @@ class SelectQuery extends Query {
 		$this->query = sprintf(
 			"SELECT %s FROM %s WHERE %s %s",
 			$this->items,
-			$this->from,
+			$this->table,
 			!empty($this->conditions) ? $this->conditions : '1',
 			$this->order
 		);

@@ -60,7 +60,7 @@ class UpdateQuery extends Query {
 	public function execute(): bool {
 		$this->query = sprintf(
 			"UPDATE %s SET %s WHERE %s", //I don't know how to suppress this warning...
-			$this->from,
+			$this->table,
 			$this->set,
 			!empty($this->conditions) ? $this->conditions : '1'
 		);

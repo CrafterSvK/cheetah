@@ -15,7 +15,6 @@ abstract class Query {
 	/** @var mysqli */
 	protected $db;
 
-	protected $from = "";
 	protected $query = "";
 	protected $order = "";
 	protected $conditions = "";

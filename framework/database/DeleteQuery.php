@@ -23,7 +23,7 @@ class DeleteQuery extends Query {
 	public function execute(): void {
 		$this->query = sprintf(
 			"DELETE FROM %s WHERE %s",
-			$this->from,
+			$this->table,
 			!empty($this->conditions) ? $this->conditions : '1'
 		);
 
