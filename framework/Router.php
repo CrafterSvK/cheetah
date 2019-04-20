@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace cheetah;
 
+use function file_exists;
 use function file_get_contents;
 use function json_decode;
+use Exception;
 
 /** Router with arbitrary parameter position
  * @param string name of json file with routes
@@ -47,7 +49,7 @@ class Router {
 			$route = preg_replace("/{\p{L}\p{N}}/u", $param, $route, 1);
 		}
 
-		return $this->routes[$name]['route'];
+		return $route;
 	}
 
 	/**
@@ -104,13 +106,20 @@ class Router {
 	/** Spawn session and controller
 	 * @param array route with parameters
 	 * @param array array of params
+	 * @throws Exception when view does not exist
 	 * @return void
 	 */
 	private function _spawn(array $route, array $params = []): void {
 		session_start();
 
 		if (isset($route['view'])) {
-			require $this->config['view-prefix'] . $route['view'];
+			$file = $this->config['view-prefix'] . $route['view'];
+
+			if (file_exists($file)) {
+				require $file;
+			} else {
+				throw new Exception("File {$file} does not exist.");
+			}
 
 			return;
 		}
