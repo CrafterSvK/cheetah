@@ -43,7 +43,12 @@ class Condition {
 			$value = !is_null($value) ? $value = "'{$this->db->real_escape_string((string)$value)}'" : "NULL";
 		}
 
-		if (!empty($this->conditions)) $this->conditions = "(" . $this->conditions;
+		if (
+			!empty($this->conditions)
+			&& substr($this->conditions, 0, 1) !== "("
+		) {
+			$this->conditions = "({$this->conditions}";
+		}
 
 		$this->add("{$column} {$type} {$value}");
 
