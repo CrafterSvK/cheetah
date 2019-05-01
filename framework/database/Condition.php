@@ -40,7 +40,7 @@ class Condition {
 			$key = array_key_first($value);
 			$value = "`{$key}`.{$value[$key]}";
 		} else {
-			$value = !is_null($value) ? $value = "'{$this->db->real_escape_string((string)$value)}'" : "NULL";
+			$value = !is_null($value) ? "'{$this->db->real_escape_string((string)$value)}'" : "NULL";
 		}
 
 		if (

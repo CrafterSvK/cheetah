@@ -12,7 +12,11 @@ use function file_exists;
  * React is pointless and big.
  */
 abstract class Controller {
-	public function render(string $view) {
+	/**
+	 * Render view file.
+	 * @param string view file location
+	 */
+	public function render(string $view): void {
 		if (!file_exists($view)) {
 			echo "View {$view} doesn't exist.";
 
@@ -20,11 +24,17 @@ abstract class Controller {
 		}
 
 		require $view;
+		exit();
 	}
 
-	public function json($json) {
+	/**
+	 * Prints JSON content with JSON header formatted as utf8
+	 * @param mixed json content
+	 */
+	public function json($json): void {
 		header("Content-Type: application/json; charset=utf8");
 
 		echo json_encode($json);
+		exit();
 	}
 }

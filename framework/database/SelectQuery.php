@@ -23,9 +23,10 @@ class SelectQuery extends Query {
 	/**
 	 * Add column to query
 	 * @param array|string table.column | column
+	 * @param string DISTINCT or other options
 	 * @return SelectQuery
 	 */
-	public function item($column): SelectQuery {
+	public function item($column, string $options = null): SelectQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
 
@@ -37,6 +38,8 @@ class SelectQuery extends Query {
 
 			$column = "`{$key}`.{$column[$key]}";
 		}
+
+		if (!is_null($options)) $column = "{$options} {$column}";
 
 		$this->items .= empty($this->items) ? $column : ", {$column}";
 
