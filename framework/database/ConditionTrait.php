@@ -14,7 +14,7 @@ trait ConditionTrait {
 	 * @param string condition
 	 * @return void
 	 */
-	protected function add($conditionString): void {
+	public function add($conditionString): void {
 		$this->conditions .= empty($this->conditions)
 			? $conditionString
 			: " {$this->operator} $conditionString";
