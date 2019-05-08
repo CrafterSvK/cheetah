@@ -8,13 +8,16 @@ use mysqli;
 
 /**
  * Update query (part of database abstraction layer)
- * @param string name of a table
- * @param mysqli connection
  * @author Jakub Janek
  */
 class UpdateQuery extends Query {
 	private $set;
 
+	/**
+	 * UpdateQuery constructor.
+	 * @param string name of a table
+	 * @param mysqli $db mysqli connection
+	 */
 	public function __construct($table, mysqli $db) {
 		parent::__construct($table, $db);
 	}
@@ -56,6 +59,7 @@ class UpdateQuery extends Query {
 	/**
 	 * Execute update query
 	 * @return bool|void
+	 * @throws Exception if update was not successful
 	 */
 	public function execute(): bool {
 		$this->query = sprintf(
@@ -65,16 +69,13 @@ class UpdateQuery extends Query {
 			!empty($this->conditions) ? $this->conditions : '1'
 		);
 
-		try {
-			$result = $this->db->query($this->query);
+		$result = $this->db->query($this->query);
 
-			if ($result === false) {
-				throw new Exception("Invalid query {$this->query}");
-			} else {
-				return true;
-			}
-		} catch (Exception $e) {
-			echo $e;
+		if ($result === false) {
+			throw new Exception("Invalid query {$this->query}");
+		} else {
+			return true;
 		}
+
 	}
 }

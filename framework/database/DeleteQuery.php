@@ -7,11 +7,15 @@ use mysqli;
 
 /**
  * Delete query (part of database abstraction layer)
- * @param string|array name of a table
- * @param mysqli connection
  * @author Jakub Janek
  */
 class DeleteQuery extends Query {
+
+	/**
+	 * DeleteQuery constructor.
+	 * @param string|array name of a table
+	 * @param mysqli $db mysqli connection
+	 */
 	public function __construct($table, mysqli $db) {
 		parent::__construct($table, $db);
 	}

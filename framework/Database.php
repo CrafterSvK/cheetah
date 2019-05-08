@@ -14,14 +14,17 @@ use function str_replace;
 
 /**
  * Database abstraction layer.
- * @param bool if true. Database won't load from config. Usable for standalone situations
- * @throws Exception when $standalone is false and config.json is not found
  * @author Jakub Janek
  */
 class Database {
 	private $active;
 	private $db = [];
 
+	/**
+	 * Database constructor.
+	 * @param bool $standalone
+	 * @throws Exception when there is no config and is not standalone
+	 */
 	public function __construct($standalone = false) {
 		if (!$standalone) {
 			if (!file_exists('config.json')) {

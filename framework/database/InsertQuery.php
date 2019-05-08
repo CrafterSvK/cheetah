@@ -7,8 +7,6 @@ use mysqli;
 
 /**
  * Insert query (part of database abstraction layer)
- * @param string name of a table
- * @param mysqli connection
  * @author Jakub Janek
  */
 class InsertQuery extends Query {

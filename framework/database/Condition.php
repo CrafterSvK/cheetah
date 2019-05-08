@@ -7,16 +7,21 @@ use mysqli;
 
 /**
  * Condition (experimental feature)
- * @param string operator
- * @param mysqli database
- * @param Query|Condition parent
+ * @author Jakub Janek
  */
 class Condition {
-	protected $operator;
 	private $parent;
 	private $conditions = '';
 	private $db;
 
+	use ConditionTrait;
+
+	/**
+	 * Condition constructor.
+	 * @param string operator
+	 * @param $db mysqli connection object
+	 * @param Query|Condition parent
+	 */
 	public function __construct($operator, mysqli $db, $parent = null) {
 		$this->operator = $operator;
 		$this->parent = $parent;
@@ -78,46 +83,5 @@ class Condition {
 		}
 
 		return $this->parent ?? $this->conditions;
-	}
-
-	/**
-	 * Writes condition into string
-	 * @param string condition
-	 * @return void
-	 */
-	protected function add($conditionString): void {
-		$this->conditions .= empty($this->conditions)
-			? $conditionString
-			: " {$this->operator} $conditionString";
-	}
-
-	/**
-	 * Set operator of a next conditions to OR
-	 * @return Condition
-	 */
-	public function or(): Condition {
-		$this->operator = "OR";
-
-		return $this;
-	}
-
-	/**
-	 * Set operator of a next conditions to AND
-	 * @return Condition
-	 */
-	public function and(): Condition {
-		$this->operator = "AND";
-
-		return $this;
-	}
-
-	/**
-	 * Set operator of a next conditions to XOR
-	 * @return Condition
-	 */
-	public function xor(): Condition {
-		$this->operator = "XOR";
-
-		return $this;
 	}
 }

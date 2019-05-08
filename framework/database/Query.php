@@ -7,8 +7,6 @@ use mysqli;
 
 /**
  * Query (part of database abstraction layer)
- * @param array|string tables | table
- * @param mysqli object with database
  * @author Jakub Janek
  */
 abstract class Query {
@@ -19,13 +17,21 @@ abstract class Query {
 	protected $order = "";
 	protected $conditions = "";
 	protected $table = "";
-	protected $operator = 'AND';
 
+	use ConditionTrait;
+
+	/**
+	 * Query constructor.
+	 * @param array|string tables | table
+	 * @param $db mysqli object with database
+	 */
 	public function __construct($table, mysqli $db) {
 		$this->db = $db;
 
 		if (is_array($table)) {
-			foreach ($table as &$t) $t = "`{$t}`"; //sanitize names
+			foreach ($table as $key => &$t) {
+				$t = is_numeric($key) ? "`{$t}`" : "`{$t}` AS `{$key}`";
+			} //sanitize names or add alias
 
 			$table = implode(', ', $table);
 		} else {
@@ -52,18 +58,6 @@ abstract class Query {
 	}
 
 	/**
-	 * Adds condition string to conditions.
-	 * Do not use if you don't know what you are doing!
-	 * @param string
-	 * @return void
-	 */
-	public function add($conditionString): void {
-		$this->conditions .= empty($this->conditions)
-			? $conditionString
-			: " {$this->operator} $conditionString";
-	}
-
-	/**
 	 * Add multiple conditions in a group
 	 * @param string operator
 	 * @return Condition
@@ -72,36 +66,6 @@ abstract class Query {
 		$condition = new Condition($operator, $this->db, $this);
 
 		return $condition;
-	}
-
-	/**
-	 * Set operator of a next conditions to OR
-	 * @return Query
-	 */
-	public function or(): Query {
-		$this->operator = "OR";
-
-		return $this;
-	}
-
-	/**
-	 * Set operator of a next conditions to AND
-	 * @return Query
-	 */
-	public function and(): Query {
-		$this->operator = "AND";
-
-		return $this;
-	}
-
-	/**
-	 * Set operator of a next conditions to XOR
-	 * @return Query
-	 */
-	public function xor(): Query {
-		$this->operator = "XOR";
-
-		return $this;
 	}
 
 	/**

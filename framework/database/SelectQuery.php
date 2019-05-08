@@ -9,13 +9,16 @@ use mysqli_result;
 
 /**
  * Select query (part of database abstraction layer)
- * @param string name of a table
- * @param mysqli connection
  * @author Jakub Janek
  */
 class SelectQuery extends Query {
 	private $items = "";
 
+	/**
+	 * SelectQuery constructor.
+	 * @param string|array table | tables
+	 * @param mysqli connection
+	 */
 	public function __construct($table, $db) {
 		parent::__construct($table, $db);
 	}
@@ -23,10 +26,11 @@ class SelectQuery extends Query {
 	/**
 	 * Add column to query
 	 * @param array|string table.column | column
+	 * @param string alias of given item
 	 * @param string DISTINCT or other options
 	 * @return SelectQuery
 	 */
-	public function item($column, string $options = null): SelectQuery {
+	public function item($column, string $alias = null, string $prefix = null): SelectQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
 
@@ -39,7 +43,8 @@ class SelectQuery extends Query {
 			$column = "`{$key}`.{$column[$key]}";
 		}
 
-		if (!is_null($options)) $column = "{$options} {$column}";
+		if (!is_null($alias)) $column .= " AS `{$alias}`";
+		if (!is_null($prefix)) $column = "{$prefix} {$column}";
 
 		$this->items .= empty($this->items) ? $column : ", {$column}";
 
@@ -60,6 +65,7 @@ class SelectQuery extends Query {
 	/**
 	 * Execute select query
 	 * @return mysqli_result
+	 * @throws Exception if the query is invalid
 	 */
 	public function execute(): mysqli_result {
 		$this->query = sprintf(
@@ -70,16 +76,12 @@ class SelectQuery extends Query {
 			$this->order
 		);
 
-		try {
-			$result = $this->db->query($this->query);
+		$result = $this->db->query($this->query);
 
-			if ($result === false) {
-				throw new Exception("Invalid query {$this->query}");
-			} else {
-				return $result;
-			}
-		} catch (Exception $e) {
-			echo $e;
+		if ($result === false) {
+			throw new Exception("Invalid query {$this->query}");
+		} else {
+			return $result;
 		}
 	}
 
