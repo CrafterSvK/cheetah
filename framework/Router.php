@@ -46,7 +46,7 @@ class Router {
 		$route = $this->routes[$name]['route'];
 
 		foreach ($params as $param) {
-			$route = preg_replace("/{\p{L}\p{N}}/u", $param, $route, 1);
+			$route = preg_replace("/{[\p{L}\p{N}]+}/u", $param, $route, 1);
 		}
 
 		return $route;
