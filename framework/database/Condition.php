@@ -78,7 +78,12 @@ class Condition {
 	public function close() {
 		$this->conditions .= substr($this->conditions, 0, 1) === "(" ? ")" : "";
 
-		if (!is_null($this->parent)) {
+		if (isset($this->parent->join)) {
+			$this->parent->join .= " ON {$this->conditions}";
+			$this->parent->table .= " {$this->parent->join}";
+
+			unset($this->parent->join);
+		} else if (!is_null($this->parent)) {
 			$this->parent->add($this->conditions);
 		}
 

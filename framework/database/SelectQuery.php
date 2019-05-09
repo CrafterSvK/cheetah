@@ -13,6 +13,7 @@ use mysqli_result;
  */
 class SelectQuery extends Query {
 	private $items = "";
+	public $join = "";
 
 	/**
 	 * SelectQuery constructor.
@@ -60,6 +61,25 @@ class SelectQuery extends Query {
 		foreach ($columns as $column) $this->item($column);
 
 		return $this;
+	}
+
+	/**
+	 * @param string table to join
+	 * @param string type of join
+	 * @param string alias of joined table
+	 * @param string operator of join conditions
+	 * @return Condition
+	 */
+	public function join(string $table, ?string $type = null, ?string $alias = null, ?string $operator = null): Condition {
+		$join = "";
+
+		if (!is_null($type)) $join .= "{$type} ";
+		$join .= "JOIN `{$table}`";
+		if (!is_null($alias)) $join .= " AS `{$alias}`";
+
+		$this->join = $join;
+
+		return new Condition($operator, $this->db, $this);
 	}
 
 	/**

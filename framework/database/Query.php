@@ -16,7 +16,7 @@ abstract class Query {
 	protected $query = "";
 	protected $order = "";
 	protected $conditions = "";
-	protected $table = "";
+	public $table = "";
 
 	use ConditionTrait;
 
