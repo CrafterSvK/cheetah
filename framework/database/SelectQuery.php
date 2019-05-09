@@ -13,15 +13,19 @@ use mysqli_result;
  */
 class SelectQuery extends Query {
 	private $items = "";
-	public $join = "";
+	public $join;
+	protected $option;
 
 	/**
 	 * SelectQuery constructor.
 	 * @param string|array table | tables
 	 * @param mysqli connection
+	 * @param string option like DISTINCT
 	 */
-	public function __construct($table, $db) {
+	public function __construct($table, $db, ?string $option = null) {
 		parent::__construct($table, $db);
+
+		$this->option = $option;
 	}
 
 	/**
@@ -31,7 +35,7 @@ class SelectQuery extends Query {
 	 * @param string DISTINCT or other options
 	 * @return SelectQuery
 	 */
-	public function item($column, string $alias = null, string $prefix = null): SelectQuery {
+	public function item($column, string $alias = null): SelectQuery {
 		if (is_array($column)) {
 			$key = array_key_first($column);
 
@@ -45,7 +49,6 @@ class SelectQuery extends Query {
 		}
 
 		if (!is_null($alias)) $column .= " AS `{$alias}`";
-		if (!is_null($prefix)) $column = "{$prefix} {$column}";
 
 		$this->items .= empty($this->items) ? $column : ", {$column}";
 
@@ -89,7 +92,8 @@ class SelectQuery extends Query {
 	 */
 	public function execute(): mysqli_result {
 		$this->query = sprintf(
-			"SELECT %s FROM %s WHERE %s %s",
+			"SELECT %s%s FROM %s WHERE %s %s",
+			$this->option ?? "",
 			$this->items,
 			$this->table,
 			!empty($this->conditions) ? $this->conditions : '1',

@@ -51,10 +51,11 @@ class Database {
 	/**
 	 * Create select query on active database
 	 * @param mixed table name
+	 * @param string option like DISTINCT
 	 * @return SelectQuery
 	 */
-	public function select($table): SelectQuery {
-		$query = new SelectQuery($table, $this->active);
+	public function select($table, ?string $option = null): SelectQuery {
+		$query = new SelectQuery($table, $this->active, $option);
 
 		return $query;
 	}
