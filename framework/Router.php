@@ -16,6 +16,7 @@ use Exception;
 class Router {
 	public $routes = [];
 	public $config = [];
+	private $currentRoute;
 
 	public function __construct(string $routes, string $config) {
 		$this->routes = $this->_jsonFile($routes);
@@ -40,16 +41,20 @@ class Router {
 	 * @param mixed params
 	 * @return string
 	 */
-	public function url(string $name, ...$params): string {
-		if (!isset($this->routes[$name])) return "#";
+	public function url(?string $name = null, ...$params): string {
+		if (isset($name)) {
+			if (!isset($this->routes[$name])) return "#";
 
-		$route = $this->routes[$name]['route'];
+			$route = $this->routes[$name]['route'];
 
-		foreach ($params as $param) {
-			$route = preg_replace("/{[\p{L}\p{N}]+}/u", $param, $route, 1);
+			foreach ($params as $param) {
+				$route = preg_replace("/{[\p{L}\p{N}]+}/u", $param, $route, 1);
+			}
+
+			return $route;
+		} else {
+			return $this->currentRoute;
 		}
-
-		return $route;
 	}
 
 	/**
@@ -132,6 +137,7 @@ class Router {
 		$controller = new $controller;
 
 		$controller->router = $this; //Chain router into controller to access
+		$this->currentRoute = key($route);
 
 		call_user_func_array([$controller, $call[1]], $params);
 	}
