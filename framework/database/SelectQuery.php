@@ -92,7 +92,7 @@ class SelectQuery extends Query {
 	 */
 	public function execute(): mysqli_result {
 		$this->query = sprintf(
-			"SELECT %s%s FROM %s WHERE %s %s",
+			"SELECT %s %s FROM %s WHERE %s %s",
 			$this->option ?? "",
 			$this->items,
 			$this->table,
