@@ -74,12 +74,12 @@ class Router {
 
 		$request_uri = preg_replace('/\/$/u', '', urldecode($request_uri)); //remove leading /
 
-		preg_match_all("/[\p{L}\p{N}]+/u", $request_uri, $uri);
+		preg_match_all("/[^\/\\?]+/u", $request_uri, $uri); //todo: forbid characters
 		$uri = $uri[0];
 		$numberRequest = count($uri);
 
 		foreach ($this->routes as $routeName => $route) {
-			preg_match_all("/(?:{[\p{L}\p{N}]+})|([\p{L}\p{N}]+)/u", $route['route'], $current_route);
+			preg_match_all("/(?:{(^\/\\?)})+|(?1)+/u", $route['route'], $current_route); //todo: forbid characters
 			$numberRoute = count($current_route[0]);
 
 			if ($numberRoute !== $numberRequest) continue; //Next route iteration
