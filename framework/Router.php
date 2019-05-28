@@ -92,14 +92,13 @@ class Router {
 			$params = [];
 
 			foreach ($current_route[1] as $index => $name) {
-				if (empty($name)) {
-					$paramName = str_replace(['{', '}'], '', $current_route[0][$index]);
-					$params[$paramName] = $uri[$index];
+				if (!empty($name)) {
+					$params[$name] = $uri[$index];
 
 					continue;
 				} //Add to params & next route value
 
-				if ($name !== $uri[$index]) continue 2; //Next route iteration
+				if ($current_route[0][$index] !== $uri[$index]) continue 2; //Next route iteration
 			}
 
 			$err = false;
