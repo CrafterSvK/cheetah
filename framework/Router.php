@@ -8,16 +8,18 @@ use function file_get_contents;
 use function json_decode;
 use Exception;
 
-/** Router with arbitrary parameter position
- * @param string name of json file with routes
- * @param string name of json file with internal config vars
- * @author Jakub Janek
- */
+/** Router with arbitrary parameter position */
 class Router {
 	public $routes = [];
 	public $config = [];
 	private $currentRoute;
 
+	/**
+	 * @param string name of json file with routes
+	 * @param string name of json file with internal config vars
+	 * @throws Exception
+	 * @author Jakub Janek
+	 */
 	public function __construct(string $routes, string $config) {
 		$this->routes = $this->_jsonFile($routes);
 		$this->config = $this->_jsonFile($config);
@@ -59,6 +61,8 @@ class Router {
 
 	/**
 	 * Match route defined by routes file. This is the critical part of router as it requires to be super fast.
+	 *
+	 * @throws Exception
 	 */
 	private function _matchRoute(): void {
 		$err = true;
@@ -74,12 +78,13 @@ class Router {
 
 		$request_uri = preg_replace('/\/$/u', '', urldecode($request_uri)); //remove leading /
 
-		preg_match_all("/[^\/\\?]+/u", $request_uri, $uri); //todo: forbid characters
+		preg_match_all("/[^\/\\?]+/u", $request_uri, $uri);
 		$uri = $uri[0];
 		$numberRequest = count($uri);
 
 		foreach ($this->routes as $routeName => $route) {
-			preg_match_all("/(?:{(^\/\\?)})+|(?1)+/u", $route['route'], $current_route); //todo: forbid characters
+			preg_match_all("/{([^\/\\?]+)}|(?1)/u", $route['route'], $current_route);
+
 			$numberRoute = count($current_route[0]);
 
 			if ($numberRoute !== $numberRequest) continue; //Next route iteration
@@ -97,7 +102,8 @@ class Router {
 				if ($name !== $uri[$index]) continue 2; //Next route iteration
 			}
 
-			$err = false; break;
+			$err = false;
+			break;
 		}
 
 		if ($err) {
@@ -111,8 +117,8 @@ class Router {
 	/** Spawn session and controller
 	 * @param array route with parameters
 	 * @param array array of params
-	 * @throws Exception when view does not exist
 	 * @return void
+	 * @throws Exception when view does not exist
 	 */
 	private function _spawn(array $route, array $params = []): void {
 		session_start();
